@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="main.controller.ProcedureController"
+           prefHeight="700.0" prefWidth="900.0">
+    <children>
+        <BorderPane fx:id="mainAppPane" visible="false" managed="false">
+            <top>
+                <VBox prefHeight="120.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <MenuBar>
+                            <menus>
+                                <Menu mnemonicParsing="false" text="Файл">
+                                    <items>
+                                        <MenuItem fx:id="menuSaveAs" mnemonicParsing="false" onAction="#handleSaveAs" text="Зберегти як..." />
+                                        <MenuItem fx:id="menuReadFrom" mnemonicParsing="false" onAction="#handleReadFrom" text="Зчитати з..." />
+                                        <MenuItem fx:id="menuClose" mnemonicParsing="false" onAction="#handleClose" text="Закрити" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Редагування">
+                                    <items>
+                                        <MenuItem fx:id="menuAddProcedure" mnemonicParsing="false" onAction="#handleAddProcedure" text="Додати процедуру..." />
+                                        <MenuItem fx:id="menuDeleteProcedure" mnemonicParsing="false" onAction="#handleDeleteProcedure" text="Видалити процедуру" />
+                                        <MenuItem fx:id="menuUpdateMasters" mnemonicParsing="false" onAction="#handleUpdateMasters" text="Оновити майстрів..." />
+                                        <MenuItem fx:id="menuShowAll" mnemonicParsing="false" onAction="#handleShowAll" text="Переглянути всі" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Допомога">
+                                    <items>
+                                        <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#handleAbout" text="Про програму" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                        <Label text="Обрати операцію аналітики та пошуку:">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets left="15.0" top="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <FlowPane alignment="CENTER_LEFT" hgap="15.0" prefHeight="40.0">
+                            <VBox.margin>
+                                <Insets left="15.0" top="5.0" />
+                            </VBox.margin>
+                            <children>
+                                <ChoiceBox fx:id="operationsChoiceBox" prefWidth="480.0" />
+                                <Button fx:id="runOperationButton" mnemonicParsing="false" onAction="#handleRunOperation" style="-fx-background-color: #4a2840; -fx-text-fill: white;" text="Виконати аналіз" />
+                                <Button fx:id="refreshTableButton" mnemonicParsing="false" onAction="#handleShowAll" text="Скинути фільтри" />
+                            </children>
+                        </FlowPane>
+                    </children>
+                </VBox>
+            </top>
+            <center>
+                <TableView fx:id="procedureTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn fx:id="idColumn" prefWidth="60.0" text="ID" />
+                        <TableColumn fx:id="nameColumn" prefWidth="220.0" text="Назва послуги" />
+                        <TableColumn fx:id="categoryColumn" prefWidth="160.0" text="Категорія" />
+                        <TableColumn fx:id="durationColumn" prefWidth="130.0" text="Тривалість (хв)" />
+                        <TableColumn fx:id="priceColumn" prefWidth="120.0" text="Ціна (грн)" />
+                        <TableColumn fx:id="mastersCountColumn" prefWidth="160.0" text="Доступно майстрів" />
+                    </columns>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                    </BorderPane.margin>
+                </TableView>
+            </center>
+            <bottom>
+                <HBox alignment="CENTER_LEFT" prefHeight="45.0" spacing="30.0" style="-fx-background-color: #eef2f3; -fx-border-color: #dcdcdc; -fx-border-width: 1 0 0 0;" BorderPane.alignment="CENTER">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                    <children>
+                        <Label fx:id="lblTotalProcedures" style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Всього процедур: 0" />
+                        <Label fx:id="lblAvgPrice" style="-fx-font-weight: bold; -fx-text-fill: #4a2840;" text="Середня ціна: 0.00 грн" />
+                        <Label fx:id="lblTotalMasters" style="-fx-font-weight: bold; -fx-text-fill: #27ae60;" text="Всього майстрів: 0" />
+                    </children>
+                </HBox>
+            </bottom>
+        </BorderPane>
+
+        <AnchorPane fx:id="welcomePane" prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: linear-gradient(to bottom right, #1e131d, #4a2840, #110910);">
+            <children>
+                <Label text="САЛОН КРАСИ" layoutX="100.0" layoutY="180.0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #dfb18a; -fx-letter-spacing: 5px;" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" alignment="CENTER"/>
+                <Label text="АФРОДІТА" layoutX="100.0" layoutY="220.0" style="-fx-font-size: 64px; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" alignment="CENTER"/>
+                <Label text="Система автоматизованого обліку процедур та штату майстрів" layoutX="100.0" layoutY="310.0" style="-fx-font-size: 14px; -fx-text-fill: #b3a2b0;" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" alignment="CENTER"/>
+
+                <VBox alignment="CENTER" layoutX="350.0" layoutY="420.0" spacing="20.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0">
+                    <children>
+                        <Button fx:id="startButton" mnemonicParsing="false" onAction="#handleStartApplication" prefWidth="200.0" text="Увійти в систему"
+                                style="-fx-background-color: #dfb18a; -fx-text-fill: #1e131d; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand;"/>
+                        <Button fx:id="exitWelcomeButton" mnemonicParsing="false" onAction="#handleExitSimple" prefWidth="200.0" text="Вийти"
+                                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-border-color: white; -fx-border-radius: 20; -fx-cursor: hand;"/>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </children>
+</StackPane>
