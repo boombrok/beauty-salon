@@ -11,7 +11,7 @@ public class ProcedurePrinter {
             System.out.println("Список процедур порожній.");
             return;
         }
-        list.forEach(System.out.println);
+        list.forEach(System.out::println);
     }
 
     public static void printHighestPricedByCategory(Map<String, BeautyProcedure> map) {
