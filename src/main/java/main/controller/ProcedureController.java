@@ -223,39 +223,26 @@ public class ProcedureController {
 
     @FXML
     void handleAddProcedure(ActionEvent event) {
-        try {
-            TextInputDialog idDlg = new TextInputDialog(); idDlg.setHeaderText("Введіть ID:"); Optional<String> idRes = idDlg.showAndWait();
-            if (!idRes.isPresent()) return; int id = Integer.parseInt(idRes.get().trim());
-            if (masterProcedureList.stream().anyMatch(p -> p.getId() == id)) { showAlert(Alert.AlertType.ERROR, "Помилка", "ID вже існує."); return; }
+        BeautyProcedure newProc = main.io.ProcedureInput.readProcedure();
 
-            TextInputDialog nameDlg = new TextInputDialog(); nameDlg.setHeaderText("Введіть назву:"); Optional<String> nameRes = nameDlg.showAndWait();
-            if (!nameRes.isPresent()) return; String name = nameRes.get().trim();
-
-            ChoiceDialog<String> catDlg = new ChoiceDialog<>("Перукарські послуги", Arrays.asList("Перукарські послуги", "Нігтьовий сервіс", "Косметологія", "Візаж"));
-            catDlg.setHeaderText("Оберіть категорію:"); Optional<String> catRes = catDlg.showAndWait();
-            if (!catRes.isPresent()) return; String cat = catRes.get();
-
-            TextInputDialog durDlg = new TextInputDialog(); durDlg.setHeaderText("Введіть тривалість (хв):"); Optional<String> durRes = durDlg.showAndWait();
-            if (!durRes.isPresent()) return; int dur = Integer.parseInt(durRes.get().trim());
-
-            TextInputDialog prDlg = new TextInputDialog(); prDlg.setHeaderText("Введіть ціну (грн):"); Optional<String> prRes = prDlg.showAndWait();
-            if (!prRes.isPresent()) return; double pr = Double.parseDouble(prRes.get().trim());
-
-            TextInputDialog mDlg = new TextInputDialog(); mDlg.setHeaderText("Введіть кількість майстрів:"); Optional<String> mRes = mDlg.showAndWait();
-            if (!mRes.isPresent()) return; int masters = Integer.parseInt(mRes.get().trim());
-
-            BeautyProcedure newProc = new BeautyProcedure(id, name, cat, dur, pr, masters);
-            masterProcedureList.add(newProc);
-            procedureData.setAll(masterProcedureList);
-            recalculateDashboard();
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Помилка", "Не вдалося додати процедуру. Перевірте валідацію.");
+        if (newProc == null) {
+            showAlert(Alert.AlertType.ERROR, "Помилка", "Не вдалося додати процедуру. Перевірте валідацію або введення скасовано.");
+            return;
         }
+        if (masterProcedureList.stream().anyMatch(p -> p.getId() == newProc.getId())) {
+            showAlert(Alert.AlertType.ERROR, "Помилка", "Процедура з таким ID вже існує.");
+            return;
+        }
+
+        masterProcedureList.add(newProc);
+        procedureData.setAll(masterProcedureList);
+        recalculateDashboard();
+        showAlert(Alert.AlertType.INFORMATION, "Успіх", "Процедуру успішно додано.");
     }
 
     @FXML
     void handleAbout(ActionEvent event) {
-        showAlert(Alert.AlertType.INFORMATION, "Про програму", "Курсова робота з ООП\nТема: Облік процедур у салоні краси\nВиконав студент НУК групи 122 спеціальності");
+        showAlert(Alert.AlertType.INFORMATION, "Про програму", "Курсова робота з ООП\nТема: Облік процедур у салоні краси\nВиконав: студент Олексієнко М.С");
     }
 
     @FXML
@@ -288,7 +275,7 @@ public class ProcedureController {
                 catDlg.setHeaderText("Оберіть категорію:");
                 catDlg.showAndWait().ifPresent(res -> procedureData.setAll(procedureService.getProceduresByCategory(masterProcedureList, res)));
                 break;
-            case "4. Список навпіль за тривалістю":
+            case "4. Список поділу за тривалістю":
                 TextInputDialog durDlg = new TextInputDialog(); durDlg.setHeaderText("Введіть тривалість (хв):");
                 durDlg.showAndWait().ifPresent(res -> procedureData.setAll(procedureService.getProceduresByDuration(masterProcedureList, Integer.parseInt(res.trim()))));
                 break;
@@ -297,23 +284,18 @@ public class ProcedureController {
                 sortDlg.setHeaderText("Напрямок сортування:");
                 sortDlg.showAndWait().ifPresent(res -> procedureData.setAll(procedureService.sortProceduresByPrice(new ArrayList<>(procedureData), res.equals("За зростанням"))));
                 break;
-            case "6. Звіт: Для кожної категорії – процедура з наибольшою ціною":
+            case "6. Звіт: Для кожної категорії – процедура з найбільшою ціною":
                 Map<String, BeautyProcedure> mapMax = procedureService.getHighestPricedProcedurePerCategory(masterProcedureList);
-                StringBuilder sb1 = new StringBuilder("Найдорожчі процедури за категоріями:\n");
-                mapMax.forEach((k, v) -> sb1.append(k).append(" -> ").append(v.getName()).append(" (").append(v.getPrice()).append(" грн)\n"));
-                showAlert(Alert.AlertType.INFORMATION, "Звіт", sb1.toString());
+                String report1 = main.io.ProcedurePrinter.printHighestPricedByCategory(mapMax);
+                showAlert(Alert.AlertType.INFORMATION, "Звіт", report1);
                 break;
             case "7. Звіт: Процедури груповані за категоріями (сорт. за кількістю майстрів)":
                 ChoiceDialog<String> sortMDlg = new ChoiceDialog<>("За зростанням", Arrays.asList("За зростанням", "За спаданням"));
                 sortMDlg.setHeaderText("Сортування кількості майстрів:");
                 sortMDlg.showAndWait().ifPresent(res -> {
                     Map<String, List<BeautyProcedure>> grouped = procedureService.getProceduresGroupedByCategorySortedByMasters(masterProcedureList, res.equals("За зростанням"));
-                    StringBuilder sb2 = new StringBuilder("Звіт по майстрах:\n");
-                    grouped.forEach((k, v) -> {
-                        sb2.append("[").append(k).append("]\n");
-                        v.forEach(p -> sb2.append("  - ").append(p.getName()).append(" (Майстрів: ").append(p.getMastersCount()).append(")\n"));
-                    });
-                    showAlert(Alert.AlertType.INFORMATION, "Звіт", sb2.toString());
+                    String report2 = main.io.ProcedurePrinter.printGroupedByCategorySortedByMasters(grouped);
+                    showAlert(Alert.AlertType.INFORMATION, "Звіт", report2);
                 });
                 break;
         }
@@ -325,9 +307,9 @@ public class ProcedureController {
                 "1. Пошук процедури за ID",
                 "2. Пошук процедури за назвою (показати ціну)",
                 "3. Список процедур за категорією",
-                "4. Список навпіль за тривалістю",
+                "4. Список поділу за тривалістю",
                 "5. Сортувати поточний список за ціною",
-                "6. Звіт: Для кожної категорії – процедура з наибольшою ціною",
+                "6. Звіт: Для кожної категорії – процедура з найбільшою ціною",
                 "7. Звіт: Процедури груповані за категоріями (сорт. за кількістю майстрів)"
         );
     }

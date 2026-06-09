@@ -14,29 +14,32 @@ public class ProcedurePrinter {
         list.forEach(System.out::println);
     }
 
-    public static void printHighestPricedByCategory(Map<String, BeautyProcedure> map) {
+    public static String printHighestPricedByCategory(Map<String, BeautyProcedure> map) {
         if (map == null || map.isEmpty()) {
-            System.out.println("Немає даних для виведення найдорожчих процедур.");
-            return;
+            return "Немає даних для виведення найдорожчих процедур.";
         }
-        System.out.println("=== НАЙДОРОЖЧІ ПРОЦЕДУРИ ЗА КАТЕГОРІЯМИ ===");
+        StringBuilder sb = new StringBuilder("НАЙДОРОЖЧІ ПРОЦЕДУРИ ЗА КАТЕГОРІЯМИ\n\n");
         map.forEach((category, procedure) -> {
-            System.out.println("Категорія: " + category);
+            sb.append("Категорія: ").append(category).append("\n");
             if (procedure != null) {
-                System.out.println("  Назва: " + procedure.getName() + " | Ціна: " + procedure.getPrice() + " грн");
+                sb.append("  Назва: ").append(procedure.getName())
+                        .append(" | Ціна: ").append(String.format("%.2f", procedure.getPrice())).append(" грн\n\n");
             }
         });
+        return sb.toString();
     }
 
-    public static void printGroupedByCategorySortedByMasters(Map<String, List<BeautyProcedure>> map) {
+    public static String printGroupedByCategorySortedByMasters(Map<String, List<BeautyProcedure>> map) {
         if (map == null || map.isEmpty()) {
-            System.out.println("Немає даних для виведення групованих процедур.");
-            return;
+            return "Немає даних для виведення групованих процедур.";
         }
-        System.out.println("=== ГРУПУВАННЯ ЗА КАТЕГОРІЯМИ (СОРТУВАННЯ ЗА МАЙСТРАМИ) ===");
+        StringBuilder sb = new StringBuilder("ГРУПУВАННЯ ЗА КАТЕГОРІЯМИ (СОРТУВАННЯ ЗА МАЙСТРАМИ)\n\n");
         map.forEach((category, list) -> {
-            System.out.println("Категорія: " + category);
-            list.forEach(p -> System.out.println("  -> " + p.getName() + " (Майстрів: " + p.getMastersCount() + ")"));
+            sb.append("[").append(category).append("]\n");
+            list.forEach(p -> sb.append("  -> ").append(p.getName())
+                    .append(" (Майстрів: ").append(p.getMastersCount()).append(")\n"));
+            sb.append("\n");
         });
+        return sb.toString();
     }
 }

@@ -1,38 +1,60 @@
 package main.io;
 
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TextInputDialog;
 import main.logic.BeautyProcedure;
-import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class ProcedureInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
-
     public static BeautyProcedure readProcedure() {
         try {
-            System.out.print("Введіть ID процедури: ");
-            int id = Integer.parseInt(scanner.nextLine());
+            TextInputDialog idDlg = new TextInputDialog();
+            idDlg.setTitle("Додавання процедури");
+            idDlg.setHeaderText("Введіть ID:");
+            Optional<String> idRes = idDlg.showAndWait();
+            if (!idRes.isPresent()) return null;
+            int id = Integer.parseInt(idRes.get().trim());
 
-            System.out.print("Введіть назву процедури: ");
-            String name = scanner.nextLine();
+            TextInputDialog nameDlg = new TextInputDialog();
+            nameDlg.setTitle("Додавання процедури");
+            nameDlg.setHeaderText("Введіть назву:");
+            Optional<String> nameRes = nameDlg.showAndWait();
+            if (!nameRes.isPresent()) return null;
+            String name = nameRes.get().trim();
 
-            System.out.print("Введіть категорію: ");
-            String category = scanner.nextLine();
+            ChoiceDialog<String> catDlg = new ChoiceDialog<>("Перукарські послуги",
+                    Arrays.asList("Перукарські послуги", "Нігтьовий сервіс", "Косметологія", "Візаж"));
+            catDlg.setTitle("Додавання процедури");
+            catDlg.setHeaderText("Оберіть категорію:");
+            Optional<String> catRes = catDlg.showAndWait();
+            if (!catRes.isPresent()) return null;
+            String cat = catRes.get();
 
-            System.out.print("Введіть тривалість (хв): ");
-            int duration = Integer.parseInt(scanner.nextLine());
+            TextInputDialog durDlg = new TextInputDialog();
+            durDlg.setTitle("Додавання процедури");
+            durDlg.setHeaderText("Введіть тривалість (хв):");
+            Optional<String> durRes = durDlg.showAndWait();
+            if (!durRes.isPresent()) return null;
+            int dur = Integer.parseInt(durRes.get().trim());
 
-            System.out.print("Введіть ціну (грн): ");
-            double price = Double.parseDouble(scanner.nextLine());
+            TextInputDialog prDlg = new TextInputDialog();
+            prDlg.setTitle("Додавання процедури");
+            prDlg.setHeaderText("Введіть ціну (грн):");
+            Optional<String> prRes = prDlg.showAndWait();
+            if (!prRes.isPresent()) return null;
+            double pr = Double.parseDouble(prRes.get().trim());
 
-            System.out.print("Введіть кількість майстрів: ");
-            int mastersCount = Integer.parseInt(scanner.nextLine());
+            TextInputDialog mDlg = new TextInputDialog();
+            mDlg.setTitle("Додавання процедури");
+            mDlg.setHeaderText("Введіть кількість майстрів:");
+            Optional<String> mRes = mDlg.showAndWait();
+            if (!mRes.isPresent()) return null;
+            int masters = Integer.parseInt(mRes.get().trim());
 
-            return new BeautyProcedure(id, name, category, duration, price, mastersCount);
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка введення числового значення. Спробуйте знову.");
-            return null;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка валідації: " + e.getMessage());
+            return new BeautyProcedure(id, name, cat, dur, pr, masters);
+        } catch (Exception e) {
             return null;
         }
     }
